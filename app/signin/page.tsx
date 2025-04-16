@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { EyeIcon, EyeDropperIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
 
 type SignInInputs = {
@@ -12,43 +14,129 @@ type SignInInputs = {
 };
 
 export default function SignInPage() {
+  const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<SignInInputs>();
   const router = useRouter();
   const { login } = useContext(AuthContext)!;
 
-  const onSubmit: SubmitHandler<SignInInputs> = (data) => {
-    console.log('Sign in data:', data);
-    // Normally, call your API endpoint here.
+  const onSubmit: SubmitHandler<SignInInputs> = data => {
+    // → call your API here…
     login({ email: data.email });
     router.push('/');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-20">
-      <h2 className="text-3xl font-semibold mb-6">Sign In</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md space-y-4">
-        <div className="flex flex-col">
-          <label className="mb-1 font-medium">Email</label>
-          <input
-            type="email"
-            {...register('email', { required: 'Email is required' })}
-            className="px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-          />
-          {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
-        </div>
-        <div className="flex flex-col">
-          <label className="mb-1 font-medium">Password</label>
-          <input
-            type="password"
-            {...register('password', { required: 'Password is required' })}
-            className="px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-          />
-          {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
-        </div>
-        <button type="submit" className="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-          Login
-        </button>
-      </form>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        {/* Header: logo + sign‑up link */}
+        <header className="flex justify-between items-center mb-8">
+          {/* <Image
+            src="/easygenerator-logo.svg"
+            width={120}
+            height={32}
+            alt="EasyGenerator"
+          /> */}
+          <div className="text-sm">
+            {/* <span className="text-gray-600 mr-2">Don't have an account?</span> */}
+            <Link href="/signup" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition">
+              Sign up
+            </Link>
+          </div>
+        </header>
+
+        {/* Title */}
+        <h1 className="text-2xl font-semibold text-gray-900 text-center mb-6">
+          Welcome back
+        </h1>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              {...register('email', {
+                required: 'Enter a valid e‑mail',
+                pattern: {
+                  value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                  message: 'Enter a valid e‑mail'
+                }
+              })}
+              className={`
+                mt-1 block w-full px-4 py-2 rounded-md
+                border ${errors.email ? 'border-red-500' : 'border-gray-300'}
+                focus:outline-none focus:ring-2 focus:ring-blue-500
+              `}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              {...register('password', {
+                required: 'Please enter your password'
+              })}
+              className={`
+                mt-1 block w-full px-4 py-2 rounded-md
+                border ${errors.password ? 'border-red-500' : 'border-gray-300'}
+                focus:outline-none focus:ring-2 focus:ring-blue-500
+              `}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(s => !s)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-400"
+              tabIndex={-1}
+            >
+              {showPassword
+                ? <EyeDropperIcon className="h-5 w-5" />
+                : <EyeIcon className="h-5 w-5" />
+              }
+            </button>
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+            )}
+          </div>
+
+          {/* Keep me logged in / Forgot */}
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              />
+              <span className="ml-2">Keep me logged in</span>
+            </label>
+            <Link href="/forgot-password" className="underline hover:text-gray-800">
+              Forgot password?
+            </Link>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="
+              w-full py-3 text-white text-base font-medium rounded-full
+              bg-gradient-to-r from-purple-500 to-blue-500
+              hover:opacity-90 transition
+            "
+          >
+            Log in
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

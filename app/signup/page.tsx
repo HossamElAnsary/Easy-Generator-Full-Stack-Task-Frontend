@@ -7,6 +7,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { EyeIcon, EyeDropperIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpSchema, SignUpInput } from '@/utils/schemas/auth';
 
 type SignUpInputs = {
   email: string;
@@ -18,15 +20,13 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>();
-  const { register, handleSubmit, formState: { errors } } = useForm<SignUpInputs>();
+  const { register, handleSubmit, formState: { errors } } = useForm<SignUpInputs>({ resolver: zodResolver(signUpSchema) });
   const router = useRouter();
   const { login } = useContext(AuthContext)!;
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-  const passwordPattern =
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
 
-  const onSubmit: SubmitHandler<SignUpInputs> = async data => {
+  const onSubmit: SubmitHandler<SignUpInputs> = async (data: SignUpInput) => {
     setLoading(true);
     setErrorMsg(undefined);
 
@@ -103,13 +103,7 @@ export default function SignUpPage() {
             <input
               id="email"
               type="email"
-              {...register('email', {
-                required: 'Enter a valid e‑mail',
-                pattern: {
-                  value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                  message: 'Enter a valid e‑mail',
-                },
-              })}
+              {...register('email')}
               disabled={loading}
               className={`
                 mt-1 block w-full px-4 py-2 rounded-md
@@ -130,10 +124,7 @@ export default function SignUpPage() {
             <input
               id="name"
               type="text"
-              {...register('name', {
-                required: 'Name is required',
-                minLength: { value: 3, message: 'Name must be at least 3 characters' },
-              })}
+              {...register('name')}
               disabled={loading}
               className={`
                 mt-1 block w-full px-4 py-2 rounded-md
@@ -154,14 +145,7 @@ export default function SignUpPage() {
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              {...register('password', {
-                required: 'Password is required',
-                pattern: {
-                  value: passwordPattern,
-                  message:
-                    'Password must be 8+ chars, include a letter, number, and special character',
-                },
-              })}
+              {...register('password')}
               disabled={loading}
               className={`
                 mt-1 block w-full px-4 py-2 rounded-md

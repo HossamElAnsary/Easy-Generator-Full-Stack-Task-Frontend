@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import React, { createContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
-  user: { id: string; email: string } | null
+  user: { id: string; email: string, name: string } | null
   login: (email: string, password: string) => Promise<void>
   logout: () => void
 }

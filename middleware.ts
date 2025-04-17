@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const PUBLIC_PATHS = [
-  '/signin',
-  '/signup',
+  '/auth/signin',
+  '/auth/signup',
   '/api/auth',      // if you have custom auth APIs
   '/favicon.ico',
   '/_next/',        // static assets
@@ -29,8 +29,7 @@ export function middleware(req: NextRequest) {
   if (!token) {
     // redirect to sign-in, preserving the return URL
     const signInUrl = req.nextUrl.clone()
-    signInUrl.pathname = '/signin'
-    signInUrl.searchParams.set('from', pathname)
+    signInUrl.pathname = '/auth/signin'
     return NextResponse.redirect(signInUrl)
   }
 

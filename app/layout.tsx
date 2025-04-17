@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthProvider";
+import { cookies } from "next/headers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,17 +19,35 @@ export const metadata: Metadata = {
   description: "Simple Authentication App",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  let user = null;
+  const cookieStore = await cookies()
+  const token = cookieStore.get('accessToken')?.value;
+
+  if(token) {
+    const res = await fetch(`${process.env.API_URL}/auth/profile`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      cache: 'no-store',            // always fresh
+      credentials: 'include',       // if your API expects cookies
+    })
+
+    user = await res.json();
+  }
+  
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
+        <AuthProvider initialUser={user}>
           <main className="min-h-screen bg-gray-50 text-gray-900">
             {children}
           </main>

@@ -7,48 +7,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signUpSchema, SignUpInputs } from '@/utils/schemas/auth';
+import { SignInInputs } from '@/utils/schemas/auth';
 
 
-export default function SignUpPage() {
+export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string>();
-  const { register, handleSubmit, formState: { errors } } = useForm<SignUpInputs>({ resolver: zodResolver(signUpSchema) });
+  const { register, handleSubmit, formState: { errors } } = useForm<SignInInputs>();
   const router = useRouter();
   const { login } = useContext(AuthContext)!;
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-
-  const onSubmit: SubmitHandler<SignUpInputs> = async (data: SignUpInputs) => {
-    setLoading(true);
-    setErrorMsg(undefined);
-
-    try {
-      const res = await fetch(`${API_URL}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || 'Sign‑up failed');
-      }
-      
-      await login(data.email, data.password);
-      router.push('/');
-    } catch (err: any) {
-      setErrorMsg(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
+    await login(data.email,data.password);
+    router.push('/');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        {/* header */}
+        {/* Header: logo + sign‑up link */}
         <header className="flex justify-between items-center mb-8">
           {/* <Image
             src="/easygenerator-logo.svg"
@@ -57,38 +33,35 @@ export default function SignUpPage() {
             alt="EasyGenerator"
           /> */}
           <div className="text-sm">
-            <span className="text-gray-600 mr-2">Already have an account?</span>
-            <Link
-              href="/signin"
-              className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition"
-            >
-              Sign in
+            {/* <span className="text-gray-600 mr-2">Don't have an account?</span> */}
+            <Link href="/auth/signup" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition">
+              Sign up
             </Link>
           </div>
         </header>
 
-        {/* title */}
+        {/* Title */}
         <h1 className="text-2xl font-semibold text-gray-900 text-center mb-6">
-          Sign up
+          Welcome back
         </h1>
 
-        {/* form */}
+        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* API error */}
-          {errorMsg && (
-            <p className="text-center text-red-500">{errorMsg}</p>
-          )}
-
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              email
+                Email
             </label>
             <input
               id="email"
               type="email"
-              {...register('email')}
-              disabled={loading}
+              {...register('email', {
+                required: 'Enter a valid e‑mail',
+                pattern: {
+                  value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                  message: 'Enter a valid e‑mail'
+                }
+              })}
               className={`
                 mt-1 block w-full px-4 py-2 rounded-md
                 border ${errors.email ? 'border-red-500' : 'border-gray-300'}
@@ -100,27 +73,6 @@ export default function SignUpPage() {
             )}
           </div>
 
-          {/* Name */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Name
-            </label>
-            <input
-              id="name"
-              type="text"
-              {...register('name')}
-              disabled={loading}
-              className={`
-                mt-1 block w-full px-4 py-2 rounded-md
-                border ${errors.name ? 'border-red-500' : 'border-gray-300'}
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              `}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
-
           {/* Password */}
           <div className="relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -129,8 +81,9 @@ export default function SignUpPage() {
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              {...register('password')}
-              disabled={loading}
+              {...register('password', {
+                required: 'Please enter your password'
+              })}
               className={`
                 mt-1 block w-full px-4 py-2 rounded-md
                 border ${errors.password ? 'border-red-500' : 'border-gray-300'}
@@ -139,7 +92,7 @@ export default function SignUpPage() {
             />
             <button
               type="button"
-              onClick={() => setShowPassword(v => !v)}
+              onClick={() => setShowPassword(s => !s)}
               className="absolute inset-y-0 right-3 flex items-center text-gray-400"
               tabIndex={-1}
             >
@@ -153,17 +106,30 @@ export default function SignUpPage() {
             )}
           </div>
 
-          {/* submit */}
+          {/* Keep me logged in / Forgot */}
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              />
+              <span className="ml-2">Keep me logged in</span>
+            </label>
+            <Link href="/forgot-password" className="underline hover:text-gray-800">
+              Forgot password?
+            </Link>
+          </div>
+
+          {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
-            className={`
+            className="
               w-full py-3 text-white text-base font-medium rounded-full
               bg-gradient-to-r from-purple-500 to-blue-500
-              hover:opacity-90 transition disabled:opacity-50
-            `}
+              hover:opacity-90 transition
+            "
           >
-            {loading ? 'Signing up…' : 'Sign up'}
+            Log in
           </button>
         </form>
       </div>

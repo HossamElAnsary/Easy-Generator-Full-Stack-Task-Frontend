@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import React, { createContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
-  accessToken: string | null
   user: { id: string; email: string } | null
   login: (email: string, password: string) => Promise<void>
   logout: () => void
@@ -13,10 +12,9 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ initialUser, children }: { children: ReactNode; initialUser: any }) => {
   const router = useRouter();
-  const [accessToken, setAccessToken] = useState<string|null>(null)
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<any>(initialUser)
 
   async function login(email: string, password: string) {
 
@@ -29,19 +27,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const { accessToken } = await res.json();
 
-    setAccessToken(accessToken)
-    setUser(jwtDecode(accessToken))  // { sub: "...", email: "..." }
+    setUser(jwtDecode(accessToken))
   }
 
   function logout() {
-    setAccessToken(null)
     setUser(null)
     fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-    router.push('/signin');
+    router.push('/auth/signin');
   }
 
   return (
-    <AuthContext.Provider value={{ accessToken, user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

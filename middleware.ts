@@ -25,8 +25,7 @@ export function middleware(req: NextRequest) {
   }
 
   // look for your auth cookie (set on login)
-  const token = req.cookies.get('token')?.value
-
+  const token = req.cookies.get('accessToken')?.value
   if (!token) {
     // redirect to sign-in, preserving the return URL
     const signInUrl = req.nextUrl.clone()

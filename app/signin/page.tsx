@@ -7,11 +7,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { EyeIcon, EyeDropperIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
+import { SignInInputs } from '@/utils/schemas/auth';
 
-type SignInInputs = {
-  email: string;
-  password: string;
-};
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,9 +16,9 @@ export default function SignInPage() {
   const router = useRouter();
   const { login } = useContext(AuthContext)!;
 
-  const onSubmit: SubmitHandler<SignInInputs> = data => {
-    // → call your API here…
-    login({ email: data.email });
+  const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
+
+    await login(data.email,data.password);
     router.push('/');
   };
 

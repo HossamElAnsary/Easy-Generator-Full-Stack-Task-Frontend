@@ -5,16 +5,11 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { EyeIcon, EyeDropperIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signUpSchema, SignUpInput } from '@/utils/schemas/auth';
+import { signUpSchema, SignUpInputs } from '@/utils/schemas/auth';
 
-type SignUpInputs = {
-  email: string;
-  name: string;
-  password: string;
-};
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,12 +21,11 @@ export default function SignUpPage() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
-  const onSubmit: SubmitHandler<SignUpInputs> = async (data: SignUpInput) => {
+  const onSubmit: SubmitHandler<SignUpInputs> = async (data: SignUpInputs) => {
     setLoading(true);
     setErrorMsg(undefined);
 
     try {
-      // 1) Sign up
       const res = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,18 +35,8 @@ export default function SignUpPage() {
         const err = await res.json();
         throw new Error(err.message || 'Sign‑up failed');
       }
-      const newUser = await res.json();
-
-      // 2) Immediately sign in
-      const signInRes = await fetch(`${API_URL}/auth/signin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email, password: data.password }),
-      });
-      const { access_token } = await signInRes.json();
-
-      // 3) Update auth context & redirect
-      login({ token: access_token, user: newUser });
+      
+      await login(data.email, data.password);
       router.push('/');
     } catch (err: any) {
       setErrorMsg(err.message);
@@ -160,7 +144,7 @@ export default function SignUpPage() {
               tabIndex={-1}
             >
               {showPassword
-                ? <EyeDropperIcon className="h-5 w-5" />
+                ? <EyeSlashIcon className="h-5 w-5" />
                 : <EyeIcon className="h-5 w-5" />
               }
             </button>

@@ -18,4 +18,21 @@ export const signUpSchema = z.object({
     ),
 });
 
-export type SignUpInput = z.infer<typeof signUpSchema>;
+export type SignUpInputs = z.infer<typeof signUpSchema>;
+
+export const signInSchema = z.object({
+  email: z
+    .string()
+    .email("Must be a valid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Za-z]/, "Must include at least one letter")
+    .regex(/\d/,       "Must include at least one number")
+    .regex(
+      /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/,
+      "Must include at least one special character"
+    ),
+});
+
+export type SignInInputs = z.infer<typeof signInSchema>;

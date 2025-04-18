@@ -9,37 +9,38 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpSchema, SignUpInputs } from '@/utils/schemas/auth';
+import { useNotify } from '@/hooks/useNotify';
 
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string>();
   const { register, handleSubmit, formState: { errors } } = useForm<SignUpInputs>({ resolver: zodResolver(signUpSchema) });
   const router = useRouter();
   const { login } = useContext(AuthContext)!;
 
-  const API_URL = 'http://localhost:5001';
+  const notify = useNotify();
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data: SignUpInputs) => {
     setLoading(true);
-    setErrorMsg(undefined);
 
     try {
-      const res = await fetch(`${API_URL}/auth/signup`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
       if (!res.ok) {
         const err = await res.json();
+        notify.error(`SignUp Failed: ${err.message}`);
         throw new Error(err.message || 'Sign‑up failed');
       }
-      
+      notify.success(`User Registered Successfuly`);
+
       await login(data.email, data.password);
       router.push('/');
     } catch (err: any) {
-      setErrorMsg(err.message);
+      notify.error(`Joined the Catch: ${err}`);
     } finally {
       setLoading(false);
     }
@@ -74,10 +75,6 @@ export default function SignUpPage() {
 
         {/* form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* API error */}
-          {errorMsg && (
-            <p className="text-center text-red-500">{errorMsg}</p>
-          )}
 
           {/* Email */}
           <div>

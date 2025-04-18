@@ -1,11 +1,15 @@
+export async function apiPost<T, R = any>(url: string, body: T): Promise<R> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-import axios from 'axios';
+  const payload = await res.json();
+  if (!res.ok) {
+    const msg = payload?.message ?? JSON.stringify(payload);
+    throw new Error(msg);
+  }
 
-const api = axios.create({
-  baseURL: 'http://localhost:5001',             // e.g. http://localhost:5001
-  withCredentials: true,                    // send cookies
-  headers: { 'Content-Type': 'application/json' },
-});
-
-export default api;
+  return payload as R;
+}

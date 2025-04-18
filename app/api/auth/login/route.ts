@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { API_URL } from '@/utils/api'
 import { RouteHandler } from '@/utils/RouteHandler';
 import axios from 'axios';
 
@@ -8,7 +7,7 @@ async function handlePOST(req: NextRequest) {
   const { email, password } = await req.json();
 
   const response = await axios.post(
-    'http://localhost:5001/auth/signin',
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
     { email, password },
     {
       headers: { 'Content-Type': 'application/json' },

@@ -26,8 +26,7 @@ export const AuthProvider = ({ initialUser, children }: { children: ReactNode; i
     })
 
     const { accessToken } = await res.json();
-
-    setUser(jwtDecode(accessToken))
+    setUser(jwtDecode(accessToken as string))
   }
 
   function logout() {

@@ -18,7 +18,7 @@ export const AuthProvider = ({ initialUser, children }: { children: ReactNode; i
 
   async function login(email: string, password: string) {
 
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',      // ← so that cookies (refresh token) get set

@@ -7,13 +7,11 @@ import React, { createContext, useState, ReactNode } from 'react';
 interface AuthContextType {
   user: { id: string; email: string, name: string } | null
   login: (email: string, password: string) => Promise<void>
-  logout: () => void
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ initialUser, children }: { children: ReactNode; initialUser: any }) => {
-  const router = useRouter();
   const [user, setUser] = useState<any>(initialUser)
 
   async function login(email: string, password: string) {
@@ -29,14 +27,8 @@ export const AuthProvider = ({ initialUser, children }: { children: ReactNode; i
     setUser(jwtDecode(accessToken as string))
   }
 
-  function logout() {
-    setUser(null)
-    fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-    router.push('/auth/signin');
-  }
-
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login }}>
       {children}
     </AuthContext.Provider>
   );

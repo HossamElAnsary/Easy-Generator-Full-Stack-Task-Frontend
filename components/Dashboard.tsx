@@ -2,9 +2,10 @@
 
 import { FC, useContext } from 'react';
 import { AuthContext } from '@/contexts/AuthProvider';
+import { logout } from '@/utils/session';
 
 const Dashboard: FC = () => {
-  const { user, logout } = useContext(AuthContext)!;
+  const { user } = useContext(AuthContext)!;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-indigo-50">

@@ -4,7 +4,6 @@ import React, { useState, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,7 +38,7 @@ export default function SignUpPage() {
 
       await login(data.email, data.password);
       router.push('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       notify.error(`Joined the Catch: ${err}`);
     } finally {
       setLoading(false);
@@ -51,12 +50,6 @@ export default function SignUpPage() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         {/* header */}
         <header className="flex justify-between items-center mb-8">
-          {/* <Image
-            src="/easygenerator-logo.svg"
-            width={120}
-            height={32}
-            alt="EasyGenerator"
-          /> */}
           <div className="text-sm">
             <span className="text-gray-600 mr-2">Already have an account?</span>
             <Link

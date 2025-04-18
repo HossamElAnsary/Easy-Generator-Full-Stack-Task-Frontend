@@ -4,7 +4,6 @@ import React, { useState, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { SignInInputs } from '@/utils/schemas/auth';
@@ -26,14 +25,8 @@ export default function SignInPage() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         {/* Header: logo + sign‑up link */}
         <header className="flex justify-between items-center mb-8">
-          {/* <Image
-            src="/easygenerator-logo.svg"
-            width={120}
-            height={32}
-            alt="EasyGenerator"
-          /> */}
           <div className="text-sm">
-            {/* <span className="text-gray-600 mr-2">Don't have an account?</span> */}
+            <span className="text-gray-600 mr-2">Do not have an account?</span>
             <Link href="/auth/signup" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition">
               Sign up
             </Link>

@@ -17,8 +17,18 @@ export default function SignInPage() {
   const { login } = useContext(AuthContext)!;
 
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
-    await login(data.email,data.password);
-    router.push('/');
+    
+    try {
+      await login(data.email,data.password);
+      router.push('/');
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.error('An unexpected error occurred.');
+      }
+    }
+    
   };
 
   return (

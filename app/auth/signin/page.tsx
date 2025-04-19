@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
-import { SignInInputs } from '@/utils/schemas/auth';
+import { SignInInputs, signInSchema } from '@/utils/schemas/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<SignInInputs>();
+  const { register, handleSubmit, formState: { errors } } = useForm<SignInInputs>({ resolver: zodResolver(signInSchema) })
   const router = useRouter();
   const { login } = useContext(AuthContext)!;
 
@@ -48,13 +49,7 @@ export default function SignInPage() {
             <input
               id="email"
               type="email"
-              {...register('email', {
-                required: 'Enter a valid e‑mail',
-                pattern: {
-                  value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                  message: 'Enter a valid e‑mail'
-                }
-              })}
+              {...register('email')}
               className={`
                 mt-1 block w-full px-4 py-2 rounded-md
                 border ${errors.email ? 'border-red-500' : 'border-gray-300'}
@@ -74,9 +69,7 @@ export default function SignInPage() {
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              {...register('password', {
-                required: 'Please enter your password'
-              })}
+              {...register('password')}
               className={`
                 mt-1 block w-full px-4 py-2 rounded-md
                 border ${errors.password ? 'border-red-500' : 'border-gray-300'}
@@ -97,20 +90,6 @@ export default function SignInPage() {
             {errors.password && (
               <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
             )}
-          </div>
-
-          {/* Keep me logged in / Forgot */}
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <label className="inline-flex items-center">
-              <input
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-              />
-              <span className="ml-2">Keep me logged in</span>
-            </label>
-            <Link href="/forgot-password" className="underline hover:text-gray-800">
-              Forgot password?
-            </Link>
           </div>
 
           {/* Submit */}

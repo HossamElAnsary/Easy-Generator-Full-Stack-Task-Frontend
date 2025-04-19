@@ -1,0 +1,19 @@
+
+services:
+  nextjs:
+    build: .
+    container_name: nextjs-app
+    ports:
+      - "3000:3000" # Expose port 3000 for the Next.js app
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    volumes:
+      - ./:/app # Mount the current directory to the /app directory inside the container for live changes
+    networks:
+      - nextjs-network
+    restart: unless-stopped
+
+networks:
+  nextjs-network:
+    driver: bridge

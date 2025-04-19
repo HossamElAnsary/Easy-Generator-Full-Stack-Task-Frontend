@@ -39,7 +39,8 @@ export default function SignUpPage() {
       await login(data.email, data.password);
       router.push('/');
     } catch (err: unknown) {
-      notify.error(`Joined the Catch: ${err}`);
+      console.log(err);
+      // notify.error(`Joined the Catch: ${err}`);
     } finally {
       setLoading(false);
     }

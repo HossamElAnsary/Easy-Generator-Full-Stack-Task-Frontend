@@ -22,7 +22,7 @@ const styles: Record<ButtonVariant, string> = {
               bg-gradient-to-r from-purple-500 to-blue-500
               hover:opacity-90 transition`,
   secondary: `${baseStyle} inline-block px-8 py-3 bg-green-500 text-white font-semibold rounded-full hover:bg-green-600 transition`,
-  tertiary: `${baseStyle} bg-white text-red rounded-full hover:bg-blue hover:text-white `,
+  tertiary: `${baseStyle} inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition`,
 }
 
 const Button: FC<PropsWithChildren<ButtonProps>> = ({

@@ -3,7 +3,6 @@
 import React, { useState, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpSchema, SignUpInputs } from '@/utils/schemas/auth';
@@ -13,6 +12,7 @@ import FormField from '@/components/ui/FormField';
 import Input from '@/components/ui/Input';
 import clsx from 'clsx';
 import EyeIconToggle from '@/components/icons/EyeIconToggle';
+import AuthHeader from '@/components/AuthHeader';
 
 
 export default function SignUpPage() {
@@ -35,8 +35,8 @@ export default function SignUpPage() {
       });
       if (!res.ok) {
         const err = await res.json();
-        notify.error(`SignUp Failed: ${err.message}`);
-        throw new Error(err.message || 'Sign‑up failed');
+        notify.error(`${err.message}`);
+        throw new Error(err.message );
       }
       notify.success(`User Registered Successfuly`);
 
@@ -53,68 +53,50 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        {/* header */}
-        <header className="flex justify-between items-center mb-8">
-          <div className="text-sm">
-            <span className="text-gray-600 mr-2">Already have an account?</span>
-            <Link
-              href="/auth/signin"
-              className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition"
-            >
-              Sign in
-            </Link>
-          </div>
-        </header>
+        <AuthHeader
+          prompt="Already have an account?"
+          actionText="Sign in"
+          href="/auth/signin"
+        />
 
-        {/* title */}
         <h1 className="text-2xl font-semibold text-gray-900 text-center mb-6">
           Sign up
         </h1>
 
-        {/* form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              email
-            </label>
-            <input
+          <FormField
+            id="email"
+            label="Email"
+            error={errors.email?.message}
+          >
+            <Input
               id="email"
               type="email"
-              {...register('email')}
               disabled={loading}
-              className={`
-                mt-1 block w-full px-4 py-2 rounded-md
-                border ${errors.email ? 'border-red-500' : 'border-gray-300'}
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              `}
+              {...register('email')}
+              className={clsx(
+                'mt-1 block w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border',
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              )}
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Name */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Name
-            </label>
-            <input
+          </FormField>
+          
+          <FormField
+            id="name"
+            label="Name"
+            error={errors.name?.message}
+          >
+            <Input
               id="name"
               type="text"
-              {...register('name')}
               disabled={loading}
-              className={`
-                mt-1 block w-full px-4 py-2 rounded-md
-                border ${errors.name ? 'border-red-500' : 'border-gray-300'}
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              `}
+              {...register('name')}
+              className={clsx(
+                'mt-1 block w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border',
+                errors.name ? 'border-red-500' : 'border-gray-300'
+              )}
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
+          </FormField>
 
           <FormField
             id="password" 

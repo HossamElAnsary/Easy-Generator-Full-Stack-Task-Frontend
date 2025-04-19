@@ -31,7 +31,7 @@ export default async function RootLayout({
   const token = cookieStore.get('accessToken')?.value;
 
   if(token) {
-    const res = await fetch(`${process.env.API_URL}/auth/profile`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

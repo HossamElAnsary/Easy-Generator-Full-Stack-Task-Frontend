@@ -27,6 +27,7 @@ export const AuthProvider = ({ initialUser, children }: { children: ReactNode; i
     if (!res.ok) {
       const err = await res.json();
       notify.error(`${err.message}`);
+      throw new Error(err.message );
     }
 
     const { accessToken } = await res.json();

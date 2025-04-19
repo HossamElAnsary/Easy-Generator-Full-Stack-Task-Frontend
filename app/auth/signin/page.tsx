@@ -3,7 +3,6 @@
 import React, { useState, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { SignInInputs, signInSchema } from '@/utils/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +11,7 @@ import Button from '@/components/ui/Button';
 import clsx from 'clsx';
 import FormField from '@/components/ui/FormField';
 import EyeIconToggle from '@/components/icons/EyeIconToggle';
+import AuthHeader from '@/components/AuthHeader';
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,46 +32,32 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-8">
-          <div className="text-sm">
-            <span className="text-gray-600 mr-2">Do not have an account?</span>
-            <Link
-              href="/auth/signup"
-              className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition"
-            >
-              Sign up
-            </Link>
-          </div>
-        </header>
+        <AuthHeader
+          prompt="Do not have an account?"
+          actionText="Sign up"
+          href="/auth/signup"
+        />
 
-        {/* Title */}
         <h1 className="text-2xl font-semibold text-gray-900 text-center mb-6">
           Welcome back
         </h1>
 
-        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
+          <FormField
+            id="email"
+            label="Email"
+            error={errors.email?.message}
+          >
             <Input
               id="email"
               type="email"
               {...register('email')}
-              className={`
-                mt-1 block w-full px-4 py-2 rounded-md
-                border ${errors.email ? 'border-red-500' : 'border-gray-300'}
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              `}
+              className={clsx(
+                'mt-1 block w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border',
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              )}
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
+          </FormField>
           <FormField
             id="password" 
             label="Password" 

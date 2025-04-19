@@ -1,8 +1,10 @@
+import Card from "@/components/ui/Card";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Authentication Page",
-    description: "Simple Authentication App",
+  title: 'Authentication',
+  description: 'Sign in or sign up to your account',
+  robots: { index: false, follow: false },
 };
   
 export default async function AuthLayout({
@@ -12,8 +14,8 @@ export default async function AuthLayout({
 }>) {
 
   return (
-    <main>
-        {children}
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <Card>{children}</Card>
     </main>
   );
 }

@@ -4,41 +4,42 @@ import React, { useState, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { SignInInputs, signInSchema } from '@/utils/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
+import clsx from 'clsx';
+import FormField from '@/components/ui/FormField';
+import EyeIconToggle from '@/components/icons/EyeIconToggle';
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<SignInInputs>({ resolver: zodResolver(signInSchema) })
+  const { register, handleSubmit, formState: { errors } } =
+    useForm<SignInInputs>({ resolver: zodResolver(signInSchema) });
   const router = useRouter();
   const { login } = useContext(AuthContext)!;
 
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
-    
     try {
-      await login(data.email,data.password);
+      await login(data.email, data.password);
       router.push('/');
     } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-      } else {
-        console.error('An unexpected error occurred.');
-      }
+      console.error(err instanceof Error ? err.message : 'An unexpected error occurred.');
     }
-    
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        {/* Header: logo + sign‑up link */}
+        {/* Header */}
         <header className="flex justify-between items-center mb-8">
           <div className="text-sm">
             <span className="text-gray-600 mr-2">Do not have an account?</span>
-            <Link href="/auth/signup" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition">
+            <Link
+              href="/auth/signup"
+              className="inline-block px-4 py-2 border border-gray-300 rounded-full text-gray-800 hover:bg-gray-100 transition"
+            >
               Sign up
             </Link>
           </div>
@@ -54,9 +55,9 @@ export default function SignInPage() {
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+              Email
             </label>
-            <input
+            <Input
               id="email"
               type="email"
               {...register('email')}
@@ -71,48 +72,35 @@ export default function SignInPage() {
             )}
           </div>
 
-          {/* Password */}
-          <div className="relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
+          <FormField
+            id="password" 
+            label="Password" 
+            error={errors.password?.message}
+          >
+            <Input
               id="password"
               type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              aria-invalid={errors.password ? 'true' : 'false'}
+              // aria-describedby={errors.password ? 'password-error' : undefined}s
               {...register('password')}
-              className={`
-                mt-1 block w-full px-4 py-2 rounded-md
-                border ${errors.password ? 'border-red-500' : 'border-gray-300'}
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              `}
+              className={clsx(
+                'mt-1 block w-full pr-10 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              )}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(s => !s)}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-400"
-              tabIndex={-1}
-            >
-              {showPassword
-                ? <EyeSlashIcon className="h-5 w-5" />
-                : <EyeIcon className="h-5 w-5" />
-              }
-            </button>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
+            <EyeIconToggle isOpen={showPassword} onClick={() => setShowPassword(s => !s)} />
+          </FormField>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className="
-              w-full py-3 text-white text-base font-medium rounded-full
-              bg-gradient-to-r from-purple-500 to-blue-500
-              hover:opacity-90 transition
-            "
+          <Button
+            type="submit"               
+            variant="primary"           
+            size="md"                   
+            // disabled={loading}
           >
             Log in
-          </button>
+            {/* {loading ? 'Logging in...' : 'Log in'} */}
+          </Button>
         </form>
       </div>
     </div>

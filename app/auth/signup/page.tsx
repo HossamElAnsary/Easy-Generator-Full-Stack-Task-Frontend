@@ -4,11 +4,15 @@ import React, { useState, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpSchema, SignUpInputs } from '@/utils/schemas/auth';
 import { useNotify } from '@/hooks/useNotify';
+import Button from '@/components/ui/Button';
+import FormField from '@/components/ui/FormField';
+import Input from '@/components/ui/Input';
+import clsx from 'clsx';
+import EyeIconToggle from '@/components/icons/EyeIconToggle';
 
 
 export default function SignUpPage() {
@@ -112,50 +116,36 @@ export default function SignUpPage() {
             )}
           </div>
 
-          {/* Password */}
-          <div className="relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
+          <FormField
+            id="password" 
+            label="Password" 
+            error={errors.password?.message}
+          >
+            <Input
               id="password"
               type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              aria-invalid={errors.password ? 'true' : 'false'}
+              // aria-describedby={errors.password ? 'password-error' : undefined}s
               {...register('password')}
               disabled={loading}
-              className={`
-                mt-1 block w-full px-4 py-2 rounded-md
-                border ${errors.password ? 'border-red-500' : 'border-gray-300'}
-                focus:outline-none focus:ring-2 focus:ring-blue-500
-              `}
+              className={clsx(
+                'mt-1 block w-full pr-10 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border',
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              )}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(v => !v)}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-400"
-              tabIndex={-1}
-            >
-              {showPassword
-                ? <EyeSlashIcon className="h-5 w-5" />
-                : <EyeIcon className="h-5 w-5" />
-              }
-            </button>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
+            <EyeIconToggle isOpen={showPassword} onClick={() => setShowPassword(s => !s)} />
+          </FormField>
 
-          {/* submit */}
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            size="md"      
             disabled={loading}
-            className={`
-              w-full py-3 text-white text-base font-medium rounded-full
-              bg-gradient-to-r from-purple-500 to-blue-500
-              hover:opacity-90 transition disabled:opacity-50
-            `}
+            className={`disabled:opacity-50`}
           >
             {loading ? 'Signing up…' : 'Sign up'}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

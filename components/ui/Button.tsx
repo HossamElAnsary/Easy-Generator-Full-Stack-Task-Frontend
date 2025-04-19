@@ -18,8 +18,10 @@ const sizeStyles = {
 const baseStyle = `transition duration-300`;
 
 const styles: Record<ButtonVariant, string> = {
-  primary: `${baseStyle} bg-red text-white rounded hover:bg-blue`,
-  secondary: `${baseStyle} border border-red text-red rounded hover:bg-blue-100`,
+  primary: `${baseStyle} w-full py-3 text-white text-base font-medium rounded-full
+              bg-gradient-to-r from-purple-500 to-blue-500
+              hover:opacity-90 transition`,
+  secondary: `${baseStyle} inline-block px-8 py-3 bg-green-500 text-white font-semibold rounded-full hover:bg-green-600 transition`,
   tertiary: `${baseStyle} bg-white text-red rounded-full hover:bg-blue hover:text-white `,
 }
 

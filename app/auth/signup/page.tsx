@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState, useContext } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/contexts/AuthProvider';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpSchema, SignUpInputs } from '@/utils/schemas/auth';
 import { useNotify } from '@/hooks/useNotify';
 import Button from '@/components/ui/Button';
@@ -13,42 +11,33 @@ import Input from '@/components/ui/Input';
 import clsx from 'clsx';
 import EyeIconToggle from '@/components/icons/EyeIconToggle';
 import AuthHeader from '@/components/AuthHeader';
+import { useAuthForm } from '@/hooks/useAuthForm';
+import { signin, signup } from '@/services/internal/auth';
 
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<SignUpInputs>({ resolver: zodResolver(signUpSchema) });
   const router = useRouter();
-  const { login } = useContext(AuthContext)!;
-
+  const { extractToken } = useContext(AuthContext)!;
   const notify = useNotify();
 
-  const onSubmit: SubmitHandler<SignUpInputs> = async (data: SignUpInputs) => {
-    setLoading(true);
+  const { register, errors, loading, onSubmit } = useAuthForm<SignUpInputs>(
+    signUpSchema,
+    async (data) => {
+      try {
+        await signup(data);
+        notify.success('Registered successfully!');
+        
+        const res = await signin({ email: data.email, password: data.password });
+        extractToken(res.accessToken);
 
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        notify.error(`${err.message}`);
-        throw new Error(err.message );
+        router.push('/');
+      } catch (err) {
+        notify.error(err instanceof Error ? err.message : 'An unexpected error occurred.');
       }
-      notify.success(`User Registered Successfuly`);
-
-      await login(data.email, data.password);
-      router.push('/');
-    } catch (err: unknown) {
-      console.log(err);
-      // notify.error(`Joined the Catch: ${err}`);
-    } finally {
-      setLoading(false);
+      
     }
-  };
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -63,7 +52,7 @@ export default function SignUpPage() {
           Sign up
         </h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           <FormField
             id="email"
             label="Email"
@@ -108,7 +97,7 @@ export default function SignUpPage() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               aria-invalid={errors.password ? 'true' : 'false'}
-              // aria-describedby={errors.password ? 'password-error' : undefined}s
+              aria-describedby={errors.password ? 'password-error' : undefined}
               {...register('password')}
               disabled={loading}
               className={clsx(

@@ -3,6 +3,7 @@
 import { FC, useContext } from 'react';
 import { AuthContext } from '@/contexts/AuthProvider';
 import { logout } from '@/utils/session';
+import Button from './ui/Button';
 
 const Dashboard: FC = () => {
   const { user } = useContext(AuthContext)!;
@@ -16,12 +17,13 @@ const Dashboard: FC = () => {
         <p className="text-gray-600 mb-8">
           Your email: <span className="font-medium">{user?.email}</span>
         </p>
-        <button
+        <Button
           onClick={logout}
-          className="inline-block px-8 py-3 bg-green-500 text-white font-semibold rounded-full hover:bg-green-600 transition"
+          size='md'
+          variant='secondary'
         >
           Logout
-        </button>
+        </Button>
       </div>
     </div>
   );

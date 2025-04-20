@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { AuthProvider, User } from "@/contexts/AuthProvider";
 import ToastProvider from "@/contexts/ToastProvider";
-import { getToken } from "@/utils/session";
+import { getToken, getUser } from "@/utils/session";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,16 +30,7 @@ export default async function RootLayout({
   const token = await getToken();
 
   if(token) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      cache: 'no-store',            // always fresh
-      credentials: 'include',       // if your API expects cookies
-    })
-
-    user = await res.json();
+    user = await getUser(token);
   }
   
   return (

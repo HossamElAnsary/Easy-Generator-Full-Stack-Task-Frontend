@@ -13,7 +13,7 @@ import EyeIconToggle from '@/components/icons/EyeIconToggle';
 import AuthHeader from '@/components/AuthHeader';
 import { useAuthForm } from '@/hooks/useAuthForm';
 import { signin, signup } from '@/services/internal/auth';
-import { jwtDecode } from 'jwt-decode';
+import { getUser } from '@/utils/session';
 
 
 export default function SignUpPage() {
@@ -30,7 +30,7 @@ export default function SignUpPage() {
         notify.success('Registered successfully!');
         
         const { accessToken } = await signin({ email: data.email, password: data.password });
-        setUser(jwtDecode(accessToken));
+        setUser(await getUser(accessToken));
 
         router.push('/');
       } catch (err) {

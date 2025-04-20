@@ -12,8 +12,8 @@ import AuthHeader from '@/components/AuthHeader';
 import { useAuthForm } from '@/hooks/useAuthForm';
 import { signin } from '@/services/internal/auth';
 import { useNotify } from '@/hooks/useNotify';
-import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '@/contexts/AuthProvider';
+import { getUser } from '@/utils/session';
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +26,7 @@ export default function SignInPage() {
     async (data) => {
       try {
         const { accessToken } = await signin({ email: data.email, password: data.password });
-        setUser(jwtDecode(accessToken));
+        setUser(await getUser(accessToken));
         router.push('/');
       } catch (err) {
         notify.error(err instanceof Error ? err.message : 'An unexpected error occurred.');

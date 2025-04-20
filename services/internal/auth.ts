@@ -42,3 +42,22 @@ export async function signin(data: SignInData) {
   
     return res.json();
 }
+
+export async function getUserProfile(token: string) {
+
+  const res = await fetch(`${BASE_URL}/auth/profile`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    cache: 'no-store',            // always fresh
+    credentials: 'include',       // if your API expects cookies
+  })
+  
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || 'Failed to get user profile');
+  }
+
+  return res.json();
+}

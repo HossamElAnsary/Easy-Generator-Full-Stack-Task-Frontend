@@ -13,12 +13,13 @@ import EyeIconToggle from '@/components/icons/EyeIconToggle';
 import AuthHeader from '@/components/AuthHeader';
 import { useAuthForm } from '@/hooks/useAuthForm';
 import { signin, signup } from '@/services/internal/auth';
+import { jwtDecode } from 'jwt-decode';
 
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { extractToken } = useContext(AuthContext)!;
+  const { setUser } = useContext(AuthContext)!;
   const notify = useNotify();
 
   const { register, errors, loading, onSubmit } = useAuthForm<SignUpInputs>(
@@ -28,8 +29,8 @@ export default function SignUpPage() {
         await signup(data);
         notify.success('Registered successfully!');
         
-        const res = await signin({ email: data.email, password: data.password });
-        extractToken(res.accessToken);
+        const { accessToken } = await signin({ email: data.email, password: data.password });
+        setUser(jwtDecode(accessToken));
 
         router.push('/');
       } catch (err) {

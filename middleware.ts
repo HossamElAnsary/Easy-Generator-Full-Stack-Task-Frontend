@@ -19,21 +19,18 @@ export function middleware(req: NextRequest) {
   
   const { pathname } = req.nextUrl
 
-  // let public routes and static files through
   if (isPublic(pathname)) {
     return NextResponse.next()
   }
 
-  // look for your auth cookie (set on login)
-  const token = req.cookies.get('accessToken')?.value
+  const token = req.cookies.get('accessToken')?.value ?? null;
+
   if (!token) {
-    // redirect to sign-in, preserving the return URL
     const signInUrl = req.nextUrl.clone()
     signInUrl.pathname = '/auth/signin'
     return NextResponse.redirect(signInUrl)
   }
 
-  // allow the request
   return NextResponse.next()
 }
 

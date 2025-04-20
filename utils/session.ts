@@ -7,3 +7,7 @@ export async function logout() {
     (await cookies()).delete("accessToken");
     redirect('/auth/signin');
 }
+
+export async function getToken() {
+    return (await cookies()).get('accessToken')?.value ?? null;
+}

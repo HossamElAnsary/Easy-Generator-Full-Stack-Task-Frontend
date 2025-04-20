@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
-import { AuthProvider } from "@/contexts/AuthProvider";
-import { cookies } from "next/headers";
+import { AuthProvider, User } from "@/contexts/AuthProvider";
 import ToastProvider from "@/contexts/ToastProvider";
+import { getToken } from "@/utils/session";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,9 +26,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  let user = null;
-  const cookieStore = await cookies()
-  const token = cookieStore.get('accessToken')?.value;
+  let user: User | null = null;
+  const token = await getToken();
 
   if(token) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {

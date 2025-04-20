@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthContext } from '@/contexts/AuthProvider';
 import { SignInInputs, signInSchema } from '@/utils/schemas/auth';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -13,20 +12,21 @@ import AuthHeader from '@/components/AuthHeader';
 import { useAuthForm } from '@/hooks/useAuthForm';
 import { signin } from '@/services/internal/auth';
 import { useNotify } from '@/hooks/useNotify';
+import { jwtDecode } from 'jwt-decode';
+import { AuthContext } from '@/contexts/AuthProvider';
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { extractToken } = useContext(AuthContext)!;
   const notify = useNotify();
-
+  const { setUser } = useContext(AuthContext)!;
+  
   const { register, errors, loading, onSubmit } = useAuthForm<SignInInputs>(
     signInSchema,
     async (data) => {
       try {
-        const res = await signin({ email: data.email, password: data.password });
-        extractToken(res.accessToken);
-  
+        const { accessToken } = await signin({ email: data.email, password: data.password });
+        setUser(jwtDecode(accessToken));
         router.push('/');
       } catch (err) {
         notify.error(err instanceof Error ? err.message : 'An unexpected error occurred.');

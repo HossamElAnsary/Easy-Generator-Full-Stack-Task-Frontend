@@ -1,24 +1,25 @@
 'use client';
 
-import { jwtDecode } from 'jwt-decode';
 import React, { createContext, useState, ReactNode } from 'react';
 
+export interface User { 
+  id: string; 
+  email: string; 
+  name: string; 
+};
+
 interface AuthContextType {
-  user: { id: string; email: string, name: string } | null
-  extractToken: (token: string) => Promise<void>
+  user: User | null;
+  setUser: (user: User) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ initialUser, children }: { children: ReactNode; initialUser: any }) => {
-  const [user, setUser] = useState<any>(initialUser)
-
-  async function extractToken(token: string) {
-    setUser(jwtDecode(token))
-  }
+export const AuthProvider = ({ initialUser, children }: { children: ReactNode; initialUser: User | null }) => {
+  const [user, setUser] = useState<User | null>(initialUser ?? null)
 
   return (
-    <AuthContext.Provider value={{ user, extractToken }}>
+    <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
